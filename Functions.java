@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 import java.util.Random;
 
 public class Functions {
@@ -6,25 +7,7 @@ public class Functions {
 	static Scanner scan= new Scanner(System.in);
 	static Random rand= new Random();
 	
-	public static void Instructions() {
-		String choice;
-		
-		//Ask to tell instructions, if yes print them
-		System.out.println("Would you like to know how to play the game?");
-		choice= scan.next();
-		
-		while (!(choice.equalsIgnoreCase("y") || 
-				choice.equalsIgnoreCase("n"))) {
-			System.out.println("Please enter a valid response.");
-			choice= scan.next();
-			}
-		
-		if (choice.equalsIgnoreCase("y")) {
-			System.out.println("Instructions to be printed. \n");
-		}
-	}
-	
-	public static void askToPlay() {
+	public static void startGame() {
 		String choice;
 		
 		//Ask to play Blackjack
@@ -41,6 +24,79 @@ public class Functions {
 		if (choice.equalsIgnoreCase("n")) {
 			scan.close();
 			java.lang.System.exit(0);
+		}
+		
+		//Ask to tell instructions, if yes print them
+		System.out.println("Would you like to know how to play the game?");
+		choice= scan.next();
+		
+		while (!(choice.equalsIgnoreCase("y") || 
+				choice.equalsIgnoreCase("n"))) {
+			System.out.println("Please enter a valid response.");
+			choice= scan.next();
+			}
+		
+		if (choice.equalsIgnoreCase("y")) {
+			System.out.println("The aim of Blackjack is to get the sum of "
+					+ "your hand as close to 21 as possible, but not go "
+					+ "over the number.");
+			
+			System.out.println("Each turn, you will have the choice "
+					+ "of either hitting or standing. Afterwards, the dealer"
+					+ " will hit or stand.");
+			
+			System.out.println("In the first turn, both you and the dealer"
+					+ " will recieve two cards. Only one of the dealer's cards"
+					+ " will be visible.");
+			
+			System.out.println("Hitting gives you another card, while "
+					+ "standing opts you out of collecting any more cards "
+					+ "until the end of the round.");
+			
+			System.out.println("Whoever ends up getting the closest to 21 "
+					+ "is the winner of the round.");
+			
+			System.out.println("If you go over 21, or \"bust\", the round"
+					+ " instantly ends and the dealer wins. But, if the"
+					+ " dealer busts, you win.");
+			
+			System.out.println("If you lose, the amount you bet is deducted "
+					+ "from your balance. If you win, the amount is added.");
+			
+			System.out.println("If the round ends with a hand that sums to "
+					+ "21, also called a \"Blackjack\", 1.5 times that "
+					+ "bet is added or subtracted.");
+			
+			System.out.println("For example, if you bet $10 and lose, and the "
+					+ "dealer has a Blackjack, $15 would be subtracted instead"
+					+ " of $10.");
+			
+			System.out.println("Cards are worth their printed value. Face cards"
+					+ " have a value of 10.");
+			
+			System.out.println("However, Aces can have a value of 1 or 11,"
+					+ "and this value can change throughout the round to the"
+					+ " player's wish.");
+			
+			System.out.println("Additionally, instead of hitting or standing, "
+					+ "the player also has the choices of doubling down or "
+					+ "folding.");
+			
+			System.out.println("If you choose to double down, your bet is "
+					+ "doubled and you recieve one more card.");
+			
+			System.out.println("Then, you stand for the rest of the round, "
+					+ "and the dealer takes his turn.");
+			
+			System.out.println("It is a high-risk, high reward type of move.");
+			
+			System.out.println("If you fold, you automatically surrender and "
+					+ "lose round, but only lose half of what you bet.");
+			
+			System.out.println("These two actions can only be performed on "
+					+ "the first turn of a round.");
+			
+			System.out.println("Let's start! \n");
 		}
 	}
 	
@@ -69,6 +125,70 @@ public class Functions {
 		
 	}
 	
+	public static String turnOne(double bet, double balance) {
+		String choice;
+		
+		System.out.println("Hit, stand, double down, or fold? (h/s/d/f)");
+		choice= scan.next();
+		
+		//Send player to while loop if bet is invalid
+		if (choice.equalsIgnoreCase("d")) {
+			if (bet*2 > balance) {
+				System.out.println("Your bet would be greater than your"
+						+ " balance if you doubled down!");
+				choice= "";
+			}
+		}
+
+		//Valid answer
+		while (!(choice.equalsIgnoreCase("h") ||
+				 choice.equalsIgnoreCase("s") ||
+				 choice.equalsIgnoreCase("d") ||
+				 choice.equalsIgnoreCase("f"))) {
+			
+			System.out.println("Enter a valid answer.");
+			choice= scan.next();
+			
+			if (choice.equalsIgnoreCase("d")) {
+				if (bet*2 > balance) {
+					System.out.println("Your bet would be greater than your"
+							+ " balance if you doubled down!");
+					choice= "";
+				}
+			}
+		}
+		
+		return choice;
+		
+	}
+	
+	public static String notTurnOne() {
+		String choice;
+		
+		System.out.println("Hit or stand? (h/s)");
+		choice= scan.next();
+
+		//Valid hit or stand
+		while (!(choice.equalsIgnoreCase("h") ||
+				choice.equalsIgnoreCase("s"))) {
+			
+			if (choice.equalsIgnoreCase("d") ||
+				choice.equalsIgnoreCase("f")) {
+				System.out.println("You can only do that on the first turn.");
+			}
+			
+			else {
+				System.out.println("Please enter a valid answer.");
+			}
+			
+			choice= scan.next();
+			
+		}
+		
+		return choice;
+		
+	}
+	
 	public static String dealerChoice(int oppamount) {
 		String oppchoice;
 		int chance;
@@ -91,20 +211,7 @@ public class Functions {
 			}
 		}
 		
-		//If amount is 17, hit with 25% chance
-		else if (oppamount == 17) {
-			chance= rand.nextInt(101);
-			
-			if (chance>=75) {
-				oppchoice= "h";
-			}
-			
-			else {
-				oppchoice= "s";
-			}
-		}
-		
-		//Never hit if amount is 18 or above
+		//Never hit if amount is 17 or above
 		else {
 			oppchoice= "s";
 		}
@@ -120,27 +227,24 @@ public class Functions {
 			temp[index]= list[index];
 		}
 		
-		temp[temp.length-1]= card;
+		temp[list.length]= card;
 		
 		return temp;
 		
 	}
 	
-	public static String printCards(String[] list) {
+	public static void printCards(String[] list) {
 		String sentence= "";
 		
 		for (String ele : list) {
-			if (ele.equals("Ace(11)") || ele.equals("Ace(1)"))  {
-				ele= "Ace";
-			}
-			sentence += ("a " + ele +", ");
+			sentence += (ele +", ");
 		}
 		
-		return sentence;
+		System.out.print(sentence);
 		
 	}
 	
-	public static int winEvent(int bet, int balance) {
+	public static double winEvent(double bet, double balance) {
 		//Add bet to balance
 		balance += bet;
 		
@@ -152,7 +256,7 @@ public class Functions {
 		
 	}
 	
-	public static int loseEvent(int bet, int balance) {	
+	public static double loseEvent(double bet, double balance) {	
 		//Subtract bet from balance
 		balance -= bet;
 		
@@ -178,6 +282,17 @@ public class Functions {
 		
 		return round;
 		
+	}
+	
+	public static void Sleep(int time) {
+		
+		//Sleep for a quick amount
+		try {
+			TimeUnit.SECONDS.sleep(time);
+			}
+		catch(InterruptedException ex) {
+			System.out.println("Error.");
+		}
 	}
 	
 }
