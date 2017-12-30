@@ -3,7 +3,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.Random;
 
 public class Functions {
-
+	
+	//Static objects
 	static Scanner scan= new Scanner(System.in);
 	static Random rand= new Random();
 	
@@ -100,6 +101,7 @@ public class Functions {
 		}
 	}
 	
+	//Assigns appropriate value to the card (eg. King= 10, Ace= 1 or 11)
 	public static int valAssigner(int owncard, int amount) {
 		
 		if (owncard>8) {
@@ -125,6 +127,21 @@ public class Functions {
 		
 	}
 	
+	public static int aceAmount(String[] cardlist) {
+		int amount= 0;
+		
+		
+		for (String ele : cardlist) {
+			if (ele.equals("Ace")) {
+				amount++;
+			}
+		}
+		
+		return amount;
+		
+	}
+	
+	//On turn one offer more options
 	public static String turnOne(double bet, double balance) {
 		String choice;
 		
@@ -162,6 +179,7 @@ public class Functions {
 		
 	}
 	
+	//Not on turn one, offer hit or stand
 	public static String notTurnOne() {
 		String choice;
 		
@@ -189,6 +207,7 @@ public class Functions {
 		
 	}
 	
+	//Decides if the dealer should hit or stand
 	public static String dealerChoice(int oppamount) {
 		String oppchoice;
 		int chance;
@@ -220,6 +239,32 @@ public class Functions {
 		
 	}
 	
+	//Sets the card, making sure it is still available
+	public static int cardSetter(int[] list) {
+		int card;
+		
+		card= rand.nextInt(13);
+		
+		while (list[card] == 0) {
+			card= rand.nextInt(13);
+		}
+		
+		return card;
+		
+	}
+	
+	//Resets cardAmount array
+	public static int[] cardAmountReset(int[] list) {
+		
+		for (int index= 0 ; index<list.length ; index++) {
+			list[index]= 4;
+		}
+		
+		return list;
+		
+	}
+	
+	//Add card to player's or dealer's list
 	public static String[] appendCard(String[] list, String card) {
 		String[] temp= new String[list.length+1];
 		
@@ -233,41 +278,81 @@ public class Functions {
 		
 	}
 	
+	//Print all the cards in the list
 	public static void printCards(String[] list) {
 		String sentence= "";
 		
 		for (String ele : list) {
-			sentence += (ele +", ");
+			sentence += (ele + ", ");
 		}
 		
 		System.out.print(sentence);
 		
 	}
 	
-	public static double winEvent(double bet, double balance) {
-		//Add bet to balance
-		balance += bet;
+	//If player wins
+	public static double winEvent(double bet, double balance, int amount) {
 		
 		System.out.println("You won the round!");
-		System.out.println("$" + bet + " was added to your balance, totaling "
-				+ "it to $" + balance + ".");
+		
+		//Add bet to balance, check if player has Blackjack
+		if (amount == 21) {
+			bet *= 1.5;
+			balance += bet;
+			
+			System.out.println("You had a Blackjack!");
+			System.out.println("Because of this, $" + bet + " is added to"
+					+ " your balance instead, totaling it to $" + balance
+					+ ".");
+		}
+		
+		else {
+			balance += bet;
+		
+			System.out.println("$" + bet + " was added to your balance,"
+				+ " totaling it to $" + balance + ".");
+		}
 		
 		return balance;
 		
 	}
 	
-	public static double loseEvent(double bet, double balance) {	
-		//Subtract bet from balance
-		balance -= bet;
+	//If player loses
+	public static double loseEvent(double bet, double balance, int oppamount) {	
 		
 		System.out.println("You lost the round.");
-		System.out.println("$" + bet + " was subtracted from your balance, "
-				+ "bringing it to $" + balance + ".");
+		
+		//Subtract bet from balance, check if dealer has Blackjack
+		if (oppamount == 21) {
+			
+			if (bet * 1.5 > balance) {
+				bet= balance;
+			}
+			
+			else {
+				bet *= 1.5;
+			}
+			
+			bet -= balance;
+			
+			System.out.println("The dealer had a Blackjack.");
+			System.out.println("Because of this, $" + bet + " is subtracted"
+					+ " from your balance instead, totaling it to $" 
+					+ balance + ".");
+		}
+		
+		else {
+			balance -= bet;
+			
+			System.out.println("$" + bet + " was subtracted from your "
+					+ "balance, bringing it to $" + balance + ".");
+		}
 		
 		return balance;
 		
 	}
 	
+	//Ask to play another round
 	public static String anotherRound() {
 		String round;
 		
@@ -284,15 +369,18 @@ public class Functions {
 		
 	}
 	
+	//Sleeps for a certain amount of time (seconds)
 	public static void Sleep(int time) {
 		
 		//Sleep for a quick amount
 		try {
 			TimeUnit.SECONDS.sleep(time);
-			}
-		catch(InterruptedException ex) {
+		}
+		
+		catch (InterruptedException ex) {
 			System.out.println("Error.");
 		}
+		
 	}
 	
 }
